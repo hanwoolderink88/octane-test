@@ -3,16 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\RequestData\ProductStoreData;
-use App\Http\Transformers\ProductTransformer;
+use App\Http\Transformers\ProductModelTransformer;
 use App\Models\Product;
 use App\Traits\HasMeta;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     use HasMeta;
 
-    public function index(Request $request, ProductTransformer $transformer)
+    public function index(Request $request, ProductModelTransformer $transformer): JsonResponse
     {
         $products = Product::query();
 
@@ -21,7 +22,7 @@ class ProductController extends Controller
         return $this->response->index($products, $transformer);
     }
 
-    public function store(Request $request, ProductTransformer $transformer, ProductStoreData $data)
+    public function store(Request $request, ProductModelTransformer $transformer, ProductStoreData $data): JsonResponse
     {
         $product = new Product();
         $product->name = $data->name;
@@ -31,8 +32,10 @@ class ProductController extends Controller
         return $this->response->model($product, $transformer);
     }
 
-    public function show(Product $product)
+    public function show(Product $product, ProductModelTransformer $transformer): JsonResponse
     {
-        return $product;
+        $this->applyIncludeToModel($product);
+
+        return $this->response->model($product, $transformer);
     }
 }

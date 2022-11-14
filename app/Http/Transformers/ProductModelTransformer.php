@@ -2,15 +2,18 @@
 
 namespace App\Http\Transformers;
 
+use App\Http\Transformers\Traits\HasTimestamps;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductTransformer extends AbstractTransformer
+class ProductModelTransformer extends AbstractModelTransformer
 {
+    use HasTimestamps;
+
     public function includes(): array
     {
         return [
-            'categories' => CategoryTransformer::class,
+            'categories' => CategoryModelTransformer::class,
         ];
     }
 

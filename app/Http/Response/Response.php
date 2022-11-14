@@ -2,7 +2,7 @@
 
 namespace App\Http\Response;
 
-use App\Http\Transformers\AbstractTransformer;
+use App\Http\Transformers\AbstractModelTransformer;
 use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,20 +12,26 @@ use Illuminate\Support\Str;
 
 class Response
 {
-    public function index(Builder|QueryBuilder $builder, ?AbstractTransformer $transformer): JsonResponse
+    public function index(
+        Builder|QueryBuilder      $builder,
+        ?AbstractModelTransformer $transformer = null,
+        array                     $columns = ['*'],
+    ): JsonResponse
     {
-        $perPage = request()->query('per_page', 20);
-
-        $builder = $builder->paginate($perPage);
+        $perPage = min(200, request()->query('per_page', 20));
 
         if ($transformer) {
-            $builder->through(fn ($model, $key) => $transformer->transform($model, $this->getIncludes()));
+            $includes = $this->getIncludes();
+
+            $response = $builder->simplePaginate($perPage)->through(fn($model, $key) => $transformer->transform($model, $includes));
+        } else {
+            $response = $builder->simplePaginate($perPage, $columns);
         }
 
-        return new JsonResponse($builder, 200);
+        return new JsonResponse($response, 200);
     }
 
-    public function model(Model $model, ?AbstractTransformer $transformer): JsonResponse
+    public function model(Model $model, ?AbstractModelTransformer $transformer): JsonResponse
     {
         if ($transformer) {
             $model = $transformer->transform($model, $this->getIncludes());
@@ -36,6 +42,8 @@ class Response
 
     private function getIncludes(): Collection
     {
-        return Str::of(request()->query('include', ''))->explode(',');
+        $include = request()->query('include');
+
+        return $include ? Str::of($include)->explode(',') : collect();
     }
 }

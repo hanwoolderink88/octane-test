@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductCategory;
 use Database\Seeders\Traits\HasData;
 use Illuminate\Database\Seeder;
 
@@ -22,18 +22,18 @@ class CatalogSeeder extends Seeder
         }
     }
 
-    public function createCategory(array $categoryData, ?ProductCategory $parent): void
+    public function createCategory(array $categoryData, ?Category $parent): void
     {
         $name = $categoryData['name'];
         $subCategories = $categoryData['categories'] ?? null;
         $products = $categoryData['products'] ?? null;
 
-        $found = ProductCategory::where('name', $name)->first();
+        $found = Category::where('name', $name)->first();
 
         if ($found) {
             $category = $found;
         } else {
-            $category = new ProductCategory();
+            $category = new Category();
             $category->name = $name;
             $category->save();
         }
@@ -56,7 +56,7 @@ class CatalogSeeder extends Seeder
         }
     }
 
-    public function createProduct(array $productData, ProductCategory $category): void
+    public function createProduct(array $productData, Category $category): void
     {
         /** @var Product|null $found */
         $found = Product::where('name', $productData['name'])->first();

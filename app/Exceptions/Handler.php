@@ -2,10 +2,10 @@
 
 namespace App\Exceptions;
 
-use Throwable;
-use Termwind\Components\Dd;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Laravel\Octane\Exceptions\DdException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -52,6 +52,10 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $e)
     {
+        if ($e instanceof DdException) {
+            return parent::render($request, $e);
+        }
+
         // Define the response
         $response = [
             'message' => config('app.debug') ? $e->getMessage() : 'An error occurred',

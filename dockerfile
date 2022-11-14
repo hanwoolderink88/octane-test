@@ -1,6 +1,6 @@
 FROM php:latest
 
-RUN apt update 
+RUN apt update
 
 RUN apt install -y wget
 RUN apt install -y curl
@@ -22,20 +22,19 @@ RUN docker-php-ext-install bcmath
 RUN docker-php-ext-install zip
 RUN docker-php-ext-install intl
 RUN docker-php-ext-install gettext
+RUN docker-php-ext-install sockets
+
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 RUN apt update && apt install -y nodejs
-
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-    php composer-setup.php \
-    php -r "unlink('composer-setup.php');" \ 
-    mv composer.phar /usr/local/bin/composer
 
 RUN useradd user -u 1000
 
 RUN mkdir /home/user && chown user:user /home/user
 
 USER user
+
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 RUN touch ~/.bashrc
 RUN echo "alias art='php artisan'" >> ~/.bashrc

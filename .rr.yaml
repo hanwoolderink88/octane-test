@@ -1,8 +1,11 @@
-version: "2.7"
-
 server:
-  relay: pipes
   command: "php worker.php"
+  env:
+    - XDEBUG_TRIGGER: 1
+    - PHP_IDE_CONFIG: "serverName=_"
 
 http:
-  address: 0.0.0.0:8000
+  address: "0.0.0.0:8080"
+  pool:
+    num_workers: 1
+    debug: false
