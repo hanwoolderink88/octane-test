@@ -1,0 +1,29 @@
+- name: Books
+  categories: 
+    - name: Programming
+      products: 
+        - {name: generic book , price: 12.99}
+        - {name: Clean Code, price: 12.99}
+        - {name: Refactoring, price: 12.99}
+        - {name: Patterns, price: 12.99}
+        - {name: Basics, price: 12.99}
+        - {name: Coding, price: 12.99}
+    - name: Cooking
+      products: 
+        - {name: generic book , price: 12.99}
+        - {name: Cooking for Dummies, price: 12.99}
+        - {name: Cooking for Experts , price: 12.99}
+        - {name: Cooking for People who don't want to cook , price: 12.99}
+        - {name: Cooking for Retards , price: 12.99}
+    - name: History
+      products: 
+        - {name: generic book , price: 12.99}
+        - {name: History of the World, price: 12.99}
+        - {name: History of the Universe, price: 12.99}
+        - {name: History of the Universe, price: 12.99}
+        - {name: History of the Humans, price: 12.99}
+        - {name: History of the Something, price: 12.99}
+        - {name: History of the Everything, price: 12.99}
+        - {name: History of the Moview, price: 12.99}
+        - {name: History of the Series, price: 12.99}
+        - {name: History of the Coding, price: 12.99}

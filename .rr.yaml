@@ -1,0 +1,8 @@
+version: "2.7"
+
+server:
+  relay: pipes
+  command: "php worker.php"
+
+http:
+  address: 0.0.0.0:8000
