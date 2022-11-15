@@ -1,0 +1,4 @@
+- name: color
+  values: [black, white, gray, red, blue, green, yellow]
+- name: size
+  values: [xs, s, m, l, xl]

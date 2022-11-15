@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Pivot\ProductAttribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -30,5 +30,12 @@ class Product extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'product_category');
+    }
+
+    public function attributeValues(): BelongsToMany
+    {
+        return $this
+            ->belongsToMany(AttributeValue::class, 'product_attribute_value')
+            ->using(ProductAttribute::class);
     }
 }

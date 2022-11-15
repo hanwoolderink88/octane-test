@@ -1,0 +1,17 @@
+- name: Straight leg
+  products:
+    - {
+        name: Straight leg 1,
+        price: 12.99,
+        attributes: { size: m, color: blue },
+      }
+    - {
+        name: Straight leg 2,
+        price: 12.99,
+        attributes: { size: [s, m], color: blue },
+      }
+    - {
+        name: Straight leg 3,
+        price: 12.99,
+        attributes: { size: [s, m], color: blue },
+      }

@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
 use App\Models\Product;
-use Database\Seeders\Traits\HasData;
+use App\Models\Category;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
 use Illuminate\Database\Seeder;
+use Database\Seeders\Traits\HasData;
 
 class CatalogSeeder extends Seeder
 {
@@ -13,13 +15,60 @@ class CatalogSeeder extends Seeder
 
     public function run(): void
     {
-        $books = $this->getData('books');
+        $this->seedAttributes();
+        $this->seedCategoriesAndProducts();
+    }
 
-        $catalog = [...$books];
+    public function seedAttributes(): void
+    {
+        $attributes = $this->getData('attributes');
+
+        foreach ($attributes as $attributeData) {
+            $attribute = $this->createAttribute($attributeData);
+
+            foreach ($attributeData['values'] as $value) {
+                $this->createAttributeValue($attribute, $value);
+            }
+        }
+    }
+
+    public function seedCategoriesAndProducts(): void
+    {
+        $books = $this->getData('books');
+        $jeans = $this->getData('jeans');
+
+        $catalog = [...$books, ...$jeans];
 
         foreach ($catalog as $categoryData) {
             $this->createCategory($categoryData, null);
         }
+    }
+
+    public function createAttribute(array $attributeData): Attribute
+    {
+        $found = Attribute::where('name', $attributeData['name'])->first();
+
+        if ($found) {
+            return $found;
+        }
+
+        return Attribute::factory()->create([
+            'name' => $attributeData['name'],
+        ]);
+    }
+
+    public function createAttributeValue(Attribute $attribute, string $value): AttributeValue
+    {
+        $found = AttributeValue::where('value', $value)->first();
+
+        if ($found) {
+            return $found;
+        }
+
+        return AttributeValue::factory()->create([
+            'value' => $value,
+            'attribute_id' => $attribute->id,
+        ]);
     }
 
     public function createCategory(array $categoryData, ?Category $parent): void
@@ -73,5 +122,27 @@ class CatalogSeeder extends Seeder
         $product->save();
 
         $product->categories()->syncWithoutDetaching($category);
+
+        $attributes = $productData['attributes'] ?? [];
+
+        foreach ($attributes as $attributeName => $attributeValue) {
+            $attribute = Attribute::query()
+                ->where('name', $attributeName)
+                ->first();
+
+            if (!$attribute) {
+                continue;
+            }
+
+            $value = AttributeValue::query()
+                ->whereRelation('attribute', 'name', $attribute->name)
+                ->where('value', $attributeValue)->first();
+
+            if (!$value) {
+                continue;
+            }
+
+            $product->attributeValues()->syncWithoutDetaching($value);
+        }
     }
 }
