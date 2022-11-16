@@ -14,6 +14,7 @@ class ProductModelTransformer extends AbstractModelTransformer
     {
         return [
             'categories' => CategoryModelTransformer::class,
+            'stock' => StockModelTransformer::class,
         ];
     }
 

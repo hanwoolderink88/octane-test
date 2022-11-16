@@ -1,0 +1,32 @@
+- name: short sleeve
+  products:
+    - name: basic short sleeve
+      price: 12.99
+      attributes:
+        size: [s, m, l]
+        color: [black, white]
+      stock:
+        - attributes: { size: s, color: black }
+          quantity: 10
+        - attributes: { size: s, color: white }
+          quantity: 10
+        - attributes: { size: m, color: black }
+          quantity: 10
+        - attributes: { size: m, color: white }
+          quantity: 10
+        - attributes: { size: l, color: black }
+          quantity: 10
+        - attributes: { size: l, color: white }
+          quantity: 10
+    - name: colored short sleeve
+      price: 12.99
+      attributes:
+        size: [m]
+        color: [blue, red, green]
+      stock:
+        - attributes: { size: m, color: blue }
+          quantity: 10
+        - attributes: { size: m, color: red }
+          quantity: 10
+        - attributes: { size: m, color: green }
+          quantity: 10

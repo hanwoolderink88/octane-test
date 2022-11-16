@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
+use App\Models\ProductAttribute;
+use App\Models\Stock;
 use Illuminate\Database\Seeder;
 use Database\Seeders\Traits\HasData;
 
@@ -35,9 +37,9 @@ class CatalogSeeder extends Seeder
     public function seedCategoriesAndProducts(): void
     {
         $books = $this->getData('books');
-        $jeans = $this->getData('jeans');
+        $shirts = $this->getData('shirts');
 
-        $catalog = [...$books, ...$jeans];
+        $catalog = [...$shirts];
 
         foreach ($catalog as $categoryData) {
             $this->createCategory($categoryData, null);
@@ -125,24 +127,62 @@ class CatalogSeeder extends Seeder
 
         $attributes = $productData['attributes'] ?? [];
 
-        foreach ($attributes as $attributeName => $attributeValue) {
-            $attribute = Attribute::query()
-                ->where('name', $attributeName)
-                ->first();
+        foreach ($attributes as $attributeName => $attributeValues) {
+            foreach ($attributeValues as $attributeValue) {
+                $attribute = Attribute::query()
+                    ->where('name', $attributeName)
+                    ->first();
 
-            if (!$attribute) {
-                continue;
+                if (!$attribute) {
+                    continue;
+                }
+
+                $value = AttributeValue::query()
+                    ->whereRelation('attribute', 'name', $attribute->name)
+                    ->where('value', $attributeValue)->first();
+
+                if (!$value) {
+                    continue;
+                }
+
+                $productAttribute = new ProductAttribute();
+                $productAttribute->attribute()->associate($attribute);
+                $productAttribute->value()->associate($value);
+
+                $product->attributeValues()->save($productAttribute);
             }
+        }
 
-            $value = AttributeValue::query()
-                ->whereRelation('attribute', 'name', $attribute->name)
-                ->where('value', $attributeValue)->first();
+        $stockData = $productData['stock'] ?? null;
 
-            if (!$value) {
-                continue;
+        if (is_numeric($stockData)) {
+            // If product has no attributes (variations) create one stock row for it
+            $stock = new Stock();
+            $stock->quantity = $stockData;
+            $stock->product()->associate($product);
+            $stock->save();
+        } elseif (is_array($stockData)) {
+            // If product has attributes (variations) create stock rows for each variation
+            foreach ($stockData as $variationData) {
+                $stock = new Stock();
+                $stock->quantity = $variationData['quantity'];
+
+                $stock->product()->associate($product);
+
+                $attributeIds = [];
+
+                foreach ($variationData['attributes'] as $attributeName => $attributeValue) {
+                    $attributeIds[] = $product->attributeValues()
+                        ->whereRelation('attribute', 'name', $attributeName)
+                        ->whereRelation('value', 'value', $attributeValue)
+                        ->first(['id'])
+                        ->id;
+                }
+
+                $stock->save();
+
+                $stock->attributeValues()->sync($attributeIds);
             }
-
-            $product->attributeValues()->syncWithoutDetaching($value);
         }
     }
 }
