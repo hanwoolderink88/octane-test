@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Pivot\ProductCategory;
+use App\Models\Pivot\ProductCategory;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;

@@ -18,6 +18,8 @@ class ProductAttribute extends Model
 
     public $timestamps = false;
 
+    protected $with = ['attribute', 'value'];
+
     protected static function booted(): void
     {
         static::creating(function (self $model) {

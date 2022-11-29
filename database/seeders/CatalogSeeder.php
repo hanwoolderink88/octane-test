@@ -39,7 +39,7 @@ class CatalogSeeder extends Seeder
         $books = $this->getData('books');
         $shirts = $this->getData('shirts');
 
-        $catalog = [...$shirts];
+        $catalog = [...$shirts, ...$books];
 
         foreach ($catalog as $categoryData) {
             $this->createCategory($categoryData, null);
